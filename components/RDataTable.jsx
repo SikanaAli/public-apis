@@ -14,7 +14,7 @@ const fetcher = url => axios.get(url).then(res => res.data.entries)
 export default function RDataTable() {
     
     const [TData,setTData] = useState(null);
-    const [filterText,setFilterText] = useState('ß')
+    const [filterText,setFilterText] = useState('')
     const [resetPaginationToggle,setResetPaginationToggle] = useState(false)
 
     const _columns = [
@@ -88,20 +88,21 @@ export default function RDataTable() {
                     </div>
                 </div>)
     };
+
+    
     return (
         <div className='max-w-[75%] mx-auto '>
             <DataTable
                 title="Public APIs"
                 columns={_columns}
-                data = {TData.entries}
-                fixedHeader
+                data = {filterdEntries}
                 pagination
                 paginationResetDefaultPage={false}
                 expandableRows
                 expandableRowsComponent={ExpandedComponent}
                 subHeader
-                subHeaderComponent={FilterTextInput}
-                dense={false}
+                subHeaderComponent={subHeaderComponentMemo}
+                persistTableHead
                 
             />
         </div>
