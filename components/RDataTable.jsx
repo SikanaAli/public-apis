@@ -7,6 +7,7 @@ import LoadingIcon from './LoadingIcon';
 import Link from 'next/link';
 import { HiExternalLink } from 'react-icons/hi';
 import FilterTextInput from './FilterTextInput';
+import FilterCatergorySelect from './FilterCatergorySelectItems';
 
 
 const fetcher = url => axios.get(url).then(res => res.data.entries)
@@ -14,9 +15,12 @@ const fetcher = url => axios.get(url).then(res => res.data.entries)
 export default function RDataTable() {
     
     const [TData,setTData] = useState(null);
+    const [categories, setCategories] = useState(null)
     const [filterText,setFilterText] = useState('')
     const [resetPaginationToggle,setResetPaginationToggle] = useState(false)
+    const [filterCategory,setFilterCategory] = useState('')
 
+    
     const _columns = [
         {
             name: 'Name',
@@ -50,10 +54,24 @@ export default function RDataTable() {
         },
     ];
 
-    const filterdEntries = TData?.entries.filter(
-        row => row.API && row.API.toLowerCase().includes(filterText.toLowerCase()),
-    );
+    
 
+    const filterdEntries = TData?.entries.filter((item)=>{
+        
+
+        if(filterCategory == ''){
+            if(item.API.toLowerCase().includes(filterText.toLowerCase())){
+                return true;
+            }
+        }else{
+            if((item.API.toLowerCase().includes(filterText.toLowerCase()) && (filterCategory.toLowerCase() == item.Category.toLowerCase()))){
+                return true;
+            }
+        } 
+        return false;
+    });
+
+    
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
 			if (filterText) {
@@ -63,8 +81,13 @@ export default function RDataTable() {
 		};
 
 		return (
+            <div className='flex w-full justify-between'>
+                <FilterCatergorySelect data={categories} onFilter={e => setFilterCategory(e.target.value)}/>
+                <FilterTextInput onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
+            </div>
+
+        
             
-			<FilterTextInput onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
 		);
 	}, [filterText, resetPaginationToggle]);
 
@@ -73,6 +96,12 @@ export default function RDataTable() {
         .then(res => res.json())
         .then(data => setTData(data))
     })
+    useEffect(()=>{
+        fetch("https://api.publicapis.org/categories")
+        .then(res => res.json())
+        .then(data => setCategories(data?.categories))
+    })
+
 
     if(!TData) { return <LoadingIcon/>}
 

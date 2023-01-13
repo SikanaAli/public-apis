@@ -1,5 +1,4 @@
 import './globals.css'
-import { Suspense } from 'react'
 import { AnalyticsWrapper } from '../components/analytics'
 
 export default function RootLayout({ children }) {
