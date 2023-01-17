@@ -15,11 +15,25 @@ const fetcher = url => axios.get(url).then(res => res.data.entries)
 export default function RDataTable() {
     
     const [TData,setTData] = useState(null);
-    const [categories, setCategories] = useState(null)
     const [filterText,setFilterText] = useState('')
     const [resetPaginationToggle,setResetPaginationToggle] = useState(false)
     const [filterCategory,setFilterCategory] = useState('')
+    const [isPageLoading,setIsPageLoading] = useState(true)
+    const [isTableLoading,setisTableLoading] = useState(true)
 
+
+    useEffect(()=>{
+        fetch("https://api.publicapis.org/entries")
+        .then(res => res.json())
+        .then(data => {
+            setTData(data)
+            setisTableLoading(false)
+        })
+        setIsPageLoading(false);
+        return () => {
+            []
+        }
+    },[])
     
     const _columns = [
         {
@@ -59,7 +73,7 @@ export default function RDataTable() {
     const filterdEntries = TData?.entries.filter((item)=>{
         
 
-        if(filterCategory == ''){
+        if(filterCategory.length <= 0){
             if(item.API.toLowerCase().includes(filterText.toLowerCase())){
                 return true;
             }
@@ -82,30 +96,22 @@ export default function RDataTable() {
 
 		return (
             <div className='flex w-full justify-between'>
-                <FilterCatergorySelect data={categories} onFilter={e => setFilterCategory(e.target.value)}/>
+                <FilterCatergorySelect  onFilter={e => setFilterCategory(e.target.value)}/>
                 <FilterTextInput onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
             </div>
-
-        
-            
 		);
 	}, [filterText, resetPaginationToggle]);
 
-    useEffect(()=>{
-        fetch("https://api.publicapis.org/entries")
-        .then(res => res.json())
-        .then(data => setTData(data))
-    })
-    useEffect(()=>{
-        fetch("https://api.publicapis.org/categories")
-        .then(res => res.json())
-        .then(data => setCategories(data?.categories))
-    })
+    
+    
 
+    
+    if (isPageLoading) {
+        return <LoadingIcon/>
+    }
+   
 
-    if(!TData) { return <LoadingIcon/>}
-
-    if(TData) {console.log(TData.count)}
+    
 
     const ExpandedComponent = ({ data }) => {
         return  (<div className='py-5 pl-10 bg-slate-300'>
@@ -132,7 +138,7 @@ export default function RDataTable() {
                 subHeader
                 subHeaderComponent={subHeaderComponentMemo}
                 persistTableHead
-                
+                progressPending={isTableLoading}
             />
         </div>
         
