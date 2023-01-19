@@ -128,6 +128,7 @@ export default function RDataTable() {
     return (
         <div className='max-w-[75%] mx-auto '>
             <DataTable
+            theme='dark'
                 title="Public APIs"
                 columns={_columns}
                 data = {filterdEntries}
@@ -139,6 +140,7 @@ export default function RDataTable() {
                 subHeaderComponent={subHeaderComponentMemo}
                 persistTableHead
                 progressPending={isTableLoading}
+                progressComponent={<LoadingIcon/>}
             />
         </div>
         

@@ -39,6 +39,9 @@ useEffect(() => {
       font-normal
       text-gray-700
       bg-white bg-clip-padding bg-no-repeat
+      dark:bg-[#424242]
+      dark:text-white
+      dark:border-[#515151]
       border border-solid border-gray-300
       rounded
       transition
